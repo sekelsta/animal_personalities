@@ -1,0 +1,348 @@
+{
+    // Keys: energy, fear, anger, social, dominance, decency, curiosity, intelligence, persistence, hunger, vocal
+    //
+    // Comparison to big five:
+    // Openness split into curiosity and intelligence
+    // Concienciousness split into persistence and decency
+    // Agreeableness split into dominance and decency
+    // Extraversion split into energy, social, and vocal
+    // Neuroticism split into fear, anger, and hunger
+    //
+    // Effects in the world:
+    // Anger - chance to attack
+    // Fear - distance to start fleeing
+    // Energy - time spent wandering or napping
+    // Social - tendency to stick together in a herd or pack, also taming speed and milking. Highly correlated with oxytocin
+    // Dominance - who chooses the group direction, versus who sticks with the crowd
+    // Decency - no in-game effect yet
+    // Curiosity - learning rate during training, interest in new objects
+    // Intelligence - some special cases that make the AI more complex
+    // Persistence - how much stamina to spend on a goal before giving up
+    // Hunger - eats more food
+    // Vocal - louder and more frequent vocalizations
+    //
+    // Allocation of traits:
+    // Wild animals tend to have more fear and anger, while domestic ones tend to have less
+    // Young animals tend to have more energy, less dominance, and less persistence, which reverses as they grow older
+    //
+    // Combined, some flatten other concepts:
+    // negative anger + high decency = kindness
+    // decency + persistence = honour
+    // energy + persistence = stamina
+    // fear + anger = wildness
+    // decency + negative fear = happiness, roughly
+
+    // Neutral/mixed
+    "Well-rounded": { }, // Special all-zero value
+    Intense: { fear: 0.8, anger: 0.8, energy: 0.8, social: 0.5, decency: 0.5 },
+    Content: { fear: -0.2, persistence: -0.2, decency: 0.2, anger: -0.1, energy: -0.1 },
+
+    // Angry
+    Berserk: { anger: 1.0, energy: 0.8 },
+    Bristling: { anger: 0.9, fear: 0.9, dominance: 0.4 },
+    Seething: { anger: 0.9, energy: -0.4 },
+    Brutish: { anger: 0.8, curiosity: -0.8 },
+    Hostile: { anger: 0.8, decency: -0.6, fear: 0.5 },
+    Vicious: { anger: 0.8, decency: -0.5 },
+    Aggressive: { anger: 0.8, decency: -0.2 },
+    Menacing: { anger: 0.7, decency: -0.4, curiosity: 0.2, energy: -0.2 },
+    Angry: { anger: 0.6 },
+    Reactive: { anger: 0.6, fear: 0.6, energy: 0.3 },
+    Savage: { anger: 0.5, fear: -0.4, decency: -0.2 },
+    Grumpy: { anger: 0.5, energy: -0.3, decency: 0.1 },
+    Fierce: { anger: 0.5, decency: 0.3, fear: -0.3, energy: 0.1 },
+    Cranky: { anger: 0.4, energy: -0.2, persistence: -0.2 },
+    Indignant: { anger: 0.3, social: 0.3, curiosity: 0.3 },
+
+    // Peaceful
+    Unflappable: { anger: -1.0 },
+    Mellow: { anger: -0.9, fear: -0.7, energy: -0.3 },
+    Peaceful: { anger: -0.8, energy: -0.5 },
+    Forgiving: { anger: -0.8, decency: 0.7 },
+    Gentle: { anger: -0.6, decency: 0.5, energy: -0.2 },
+    "Laid back": { anger: -0.4, fear: -0.3, energy: -0.2, social: -0.1 },
+
+    // Fearful
+    Terrified: { fear: 1.0 },
+    Paranoid: { fear: 0.9, social: -0.6, intelligence: 0.3, decency: -0.1 },
+    Fearful: { fear: 0.8 },
+    Skittish: { fear: 0.8, energy: 0.4, anger: -0.4 },
+    Unpredictable: { fear: 0.8, anger: 0.7, social: -0.2, energy: 0.2 },
+    Defensive: { fear: 0.7, anger: 0.4, energy: -0.2 },
+    Wild: { fear: 0.6, anger: 0.5, intelligence: 0.3, energy: 0.2 },
+    Anxious: { fear: 0.6, social: 0.3, energy: -0.2, anger: -0.1 },
+    Alert: { fear: 0.5, energy: 0.4, persistence: 0.4 },
+    Suspicious: { fear: 0.5, curiosity: 0.4, intelligence: 0.2, persistence: 0.1, energy: -0.1 },
+    Timid: { fear: 0.5, dominance: -0.4, vocal: -0.2 },
+    Cautious: { fear: 0.4, intelligence: 0.3 },
+    Mistrustful: { fear: 0.4, social: -0.4 },
+    Troubled: { fear: 0.3, energy: -0.2, intelligence: 0.2 },
+    Sensitive: { fear: 0.2, social: 0.2 },
+
+    // Brave
+    Fearless: { fear: -1.0 },
+    Valiant: { fear: -0.8, decency: 0.4, energy: 0.3 },
+    Daring: { fear: -0.8, energy: 0.4, persistence: -0.3 },
+    Brave: { fear: -0.7, decency: 0.3 },
+    Bold: { fear: -0.6, anger: 0.2, energy: 0.1 },
+    Adventurous: { fear: -0.6, curiosity: 0.6, energy: 0.4, decency: 0.1 },
+    Reckless: { fear: -0.6, energy: 0.4, persistence: -0.4, intelligence: -0.1, decency: -0.1 },
+    Stoic: { fear: -0.5, social: -0.4, energy: -0.1 },
+    Tough: { fear: -0.4, dominance: 0.3, anger: 0.2 },
+    Confident: { fear: -0.3, dominance: 0.2 },
+    Calm: { fear: -0.3, energy: -0.3 },
+
+    // Energetic
+    Inexhaustible: { energy: 1.0 },
+    Exuberant: { energy: 0.9, decency: 0.6, fear: -0.6, anger: -0.4 },
+    Frenzied: { energy: 0.9, fear: 0.6, anger: 0.4, persistence: -0.4 },
+    Bouncy: { energy: 0.9, persistence: -0.4, curiosity: 0.2, fear: -0.2 },
+    Volatile: { energy: 0.8, anger: 0.7, fear: 0.3, decency: -0.2 },
+    Energetic: { energy: 0.7 },
+    Chaotic: { energy: 0.7, fear: 0.5, anger: 0.4, persistence: -0.3 },
+    Restless: { energy: 0.6, persistence: 0.2, social: -0.1, anger: 0.1, fear: 0.1 },
+    Zippy: { energy: 0.6, curiosity: 0.3, persistence: -0.2 },
+    Spirited: { energy: 0.6, dominance: 0.5, anger: 0.2, decency: 0.2, persistence: -0.2 },
+    Destructive: { energy: 0.6, decency: -0.5, anger: 0.4, curiosity: 0.3 },
+    Restive: { energy: 0.5, dominance: 0.4, anger: 0.2 },
+    Feisty: { energy: 0.5, anger: 0.5, dominance: 0.2 },
+    Rascal: { energy: 0.5, curiosity: 0.5, anger: 0.3, decency: 0.1 },
+    Enthusiastic: { energy: 0.5, anger:-0.5, social: 0.4, decency: 0.2, dominance: -0.2 },
+    Disruptive: { energy: 0.4, persistence: -0.4, decency: -0.3, vocal: 0.2 },
+    Spunky: { energy: 0.4, curiosity: 0.3, decency: 0.2, anger: 0.1 },
+    Antsy: { energy: 0.3, persistence: -0.3, fear: 0.1, anger: 0.1 },
+
+    // Sleepy
+    Lethargic: { energy: -1.0 },
+    Sluggish: { energy: -0.9, curiosity: -0.3, persistence: -0.1 },
+    Sleepy: { energy: -0.8 },
+    Melancholy: { energy: -0.8, fear: 0.5, social: -0.3 },
+    Gloomy: { energy: -0.7, fear: 0.6, curiosity: -0.4 },
+    Lazy: { energy: -0.7, persistence: -0.5, curiosity: -0.3 },
+    Concerned: { energy: -0.6, fear: 0.4, intelligence: 0.2 },
+    Serene: { energy: -0.6, fear: -0.4, intelligence: 0.2 },
+    Placid: { energy: -0.6, anger: -0.4 },
+    Sullen: { energy: -0.5, anger: 0.5, social: -0.2, decency: -0.1 },
+    Dreamy: { energy: -0.5, curiosity: 0.4, persistence: -0.4, vocal: -0.3 },
+    Cozy: { energy: -0.5, anger: -0.5, decency: 0.4, persistence: -0.2 },
+    Moody: { energy: -0.4, anger: 0.2, fear: 0.2 },
+    Relaxed: { energy: -0.3, fear: -0.1 },
+
+    // Social
+    Loyal: { social: 0.8, decency: 0.5, persistence: 0.4, dominance: -0.2 },
+    Social: { social: 0.8 },
+    Friendly: { social: 0.8, decency: 0.4},
+    Affectionate: { social: 0.8, decency: 0.6, energy: 0.2, persistence: -0.2 },
+    Devoted: { social: 0.8, decency: 0.7, energy: 0.3, persistence: 0.2, dominance: 0.1 },
+    Manipulative: { social: 0.8, intelligence: 0.7, decency: -0.6, dominance: 0.3 },
+    Vulnerable: { social: 0.8, fear: 0.7, dominance: -0.4, decency: 0.2 },
+    Clingy: { social: 0.7, dominance: -0.5, fear: 0.4 },
+    Trusting: { social: 0.6, fear: -0.6, decency: 0.3, dominance: -0.2 },
+    Snuggly: { social: 0.5, decency: 0.5, fear: -0.3, energy: -0.3 },
+    Cooperative: { social: 0.5, decency: 0.4, dominance: -0.3, anger: -0.2, intelligence: 0.2 },
+
+    // Aloof
+    Isolated: { social: -1.0 },
+    Reclusive: { social: -0.9, fear: 0.5, energy: -0.2 },
+    Hermit: { social: -0.9, intelligence: 0.4, energy: -0.2 },
+    Antisocial: { social: -0.8, decency: -0.5, anger: 0.3 },
+    Aloof: { social: -0.8 },
+    Independent: { social: -0.8, dominance: 0.4 },
+    Withdrawn: { social: -0.8, fear: 0.4, dominance: -0.2 },
+    Loner: { social: -0.7, dominance: 0.3, fear: -0.2 },
+    Secretive: { social: -0.7, fear: 0.6, intelligence: 0.1 },
+    Eccentric: { social: -0.7, curiosity: 0.6, persistence: -0.4 },
+    Solitary: { social: -0.6 },
+    Evasive: { social: -0.5, fear: 0.4, energy: 0.2 },
+    Haughty: { social: -0.5, dominance: 0.5, curiosity: -0.4 },
+    Standoffish: { social: -0.5, dominance: 0.3, fear: 0.2 },
+    "Self-assured": { social: -0.4, fear: -0.3, decency: 0.2, dominance: 0.2 },
+
+    // Dominant
+    Tyrannical: { dominance: 1.0, decency: -0.8, anger: 0.6, social: 0.2 },
+    Domineering: { dominance: 0.9, decency: -0.5, anger: 0.5, curiosity: -0.2 },
+    Dominant: { dominance: 0.8, social: 0.3 },
+    Regal: { dominance: 0.7, decency: 0.4, energy: -0.3, curiosity: -0.2, social: -0.1 },
+    Commanding: { dominance: 0.7, persistence: 0.5, energy: 0.4, intelligence: 0.2 },
+    Oppressive: { dominance: 0.7, decency: -0.4, persistence: 0.1 },
+    Forceful: { dominance: 0.6, anger: 0.5, persistence: 0.3 },
+    Magnanimous: { dominance: 0.5, decency: 0.4, intelligence: 0.3 },
+    Bossy: { dominance: 0.5, social: 0.3 },
+    Indominable: { dominance: 0.5, persistence: 0.5, fear: -0.3 },
+    Arrogant: { dominance: 0.4, decency: -0.3, anger: 0.2 },
+    Proud: { dominance: 0.4, persistence: 0.2 },
+    Stern: { dominance: 0.4, decency: 0.4, persistence: 0.3, anger: 0.2 },
+    Assertive: { dominance: 0.4, fear: -0.4, social: 0.2 },
+    Competitive: { dominance: 0.4, energy: 0.2, persistence: 0.1, decency: -0.1 },
+    Noble: { dominance: 0.4, decency: 0.4, social: 0.2 },
+    Willful: { dominance: 0.3, decency: 0.2 },
+
+    // Submissive
+    Pitiful: { dominance: -1.0, hunger: 0.4 },
+    "Utterly helpless": { dominance: -0.9, persistence: -0.9 },
+    Submissive: { dominance: -0.8, social: 0.3 },
+    Meek: { dominance: -0.8, anger: -0.8 },
+    Docile: { dominance: -0.6, anger: -0.4, decency: 0.2 },
+    Obedient: { dominance: -0.5, decency: 0.3, intelligence: 0.3 },
+    Eager: { dominance: -0.4, anger: -0.4, energy: 0.4, decency: 0.1 },
+    Begging: { dominance: -0.4, social: 0.4, hunger: 0.3, persistence: 0.3 },
+    Resentful: { dominance: -0.4, decency: -0.4, anger: 0.3 },
+    Willing: { dominance: -0.3, decency: 0.2 },
+
+    // Decent
+    Altruistic: { decency: 1.0 },
+    Selfless: { decency: 0.9, social: 0.4, dominance: -0.3 },
+    Loving: { decency: 0.9, social: 0.6, persistence: 0.1 },
+    Protective: { decency: 0.8, anger: 0.7, social: 0.4, energy: 0.2 },
+    Honourable: { decency: 0.8 },
+    Nurturing: { decency: 0.8, dominance: 0.5, social: 0.3, persistence: 0.3 },
+    Sweet: { decency: 0.8, social: 0.6, anger: -0.2 },
+    "Well-meaning": { decency: 0.7, intelligence: -0.4 },
+    Joyful: { decency: 0.7, energy: 0.6, anger: -0.6, fear: -0.4 },
+    Chivalrous: { decency: 0.6, social: -0.4, dominance: 0.3 },
+    Considerate: { decency: 0.6, dominance: -0.4, social: 0.4 },
+    Decent: { decency: 0.5 },
+    Benevolent: { decency: 0.5, dominance: 0.2, anger: -0.3 },
+    Buoyant: { decency: 0.5, energy: 0.5 },
+    Generous: { decency: 0.5, hunger: -0.3, social: 0.2 },
+    Kind: { decency: 0.5, anger: -0.3 },
+    Vivacious: { decency: 0.4, energy: 0.3 },
+    Merry: { decency: 0.4, social: 0.3, energy: 0.2 },
+    Humble: { decency: 0.4, dominance: -0.4, anger:-0.4 },
+    "Good natured": { decency: 0.4, anger: -0.2 },
+    Affable: { decency: 0.4, social: 0.2, fear: -0.2 },
+    Frank: { decency: 0.4, fear: -0.3 },
+    Warm: { decency: 0.3, social: 0.2, energy: -0.2 },
+    Cheerful: { decency: 0.3, fear: -0.3, anger: -0.3, social: 0.2 },
+
+    // Selfish
+    Evil: { decency: -1.0 },
+    Cruel: { decency: -1.0, anger: 0.6, dominance: 0.2 },
+    Ruthless: { decency: -1.0, persistence: 0.2 },
+    Malicious: { decency: -0.8, anger: 0.1 },
+    Dishonourable: { decency: -0.7, persistence: -0.5 },
+    Mean: { decency: -0.8, anger: 0.4 },
+    Spiteful: { decency: -0.7, persistence: 0.5, dominance: -0.4, intelligence: 0.3, vocal: -0.2 },
+    Bitter: { decency: -0.5, energy: -0.5, anger: 0.4 },
+    Cheater: { decency: -0.5 },
+    Unkind: { decency: -0.3, social: -0.1 },
+    Stingy: { decency: -0.3, hunger: 0.2, social: -0.2 },
+    Sassy: { decency: -0.3, intelligence: 0.2, persistence: -0.2 },
+
+    // Curious
+    Inquisitive: { curiosity: 0.9, fear: -0.2, social: 0.1 },
+    Curious: { curiosity: 0.8 },
+    Mischievous: { curiosity: 0.8, energy: 0.6, persistence: -0.1, decency: 0.1 },
+    Whimsical: { curiosity: 0.8, persistence: -0.5, decency: 0.4, intelligence: -0.1 },
+    Playful: { curiosity: 0.7, energy: 0.6, social: 0.5 },
+    Quirky: { curiosity: 0.7, persistence: -0.4, intelligence: 0.3, decency: 0.2, energy: 0.1 },
+    Prying: { curiosity: 0.6, social: 0.5, decency: -0.3 },
+    Resourceful: { curiosity: 0.6, intelligence: 0.6, persistence: 0.6 },
+    Cheeky: { curiosity: 0.6, persistence: -0.3, intelligence: 0.3, energy: 0.3, decency: 0.1 },
+    Impish: { curiosity: 0.5, intelligence: 0.4, decency: -0.3, persistence: -0.2, energy: 0.3 },
+    Nosy: { curiosity: 0.5, social: 0.5, energy: 0.2 },
+    Doubtful: { curiosity: 0.4, fear: 0.3, social: 0.2 },
+    Observant: { curiosity: 0.3, energy: -0.3, fear: 0.2, social: -0.2 },
+
+    // Incurious
+    "Moss on a rock": { curiosity: -0.9, energy: -0.8, fear: -0.5, anger: -0.5, dominance: -0.2 },
+    Incurious: { curiosity: -0.8 },
+    Uninterested: { curiosity: -0.6, energy: -0.3, hunger: -0.1 },
+    Straightforward: { curiosity: -0.5, intelligence: -0.2 },
+    Habitual: { curiosity: -0.5, persistence: 0.3, fear: 0.2 },
+
+    // Intelligent
+    Genius: { intelligence: 1.0 },
+    Sage: { intelligence: 1.0, dominance: 0.6, energy: -0.2 },
+    Intelligent: { intelligence: 0.8 },
+    Clever: { intelligence: 0.8, curiosity: 0.4 },
+    Conniving: { intelligence: 0.8, decency: -0.4 },
+    Wily: { intelligence: 0.7, curiosity: 0.4, fear: 0.3, social: 0.1 },
+    Wise: { intelligence: 0.6, persistence: 0.4, decency: 0.4, energy: -0.3, dominance: -0.1 },
+    Cunning: { intelligence: 0.6, persistence: 0.4, decency: -0.1 },
+    Shrewd: { intelligence: 0.5, decency: -0.4, social: 0.3, persistence: 0.2, energy: -0.2, curiosity: 0.1 },
+    Opportunistic: { intelligence: 0.4, fear: 0.3, decency: -0.2 },
+    Smart: { intelligence: 0.4 },
+    Quick: { intelligence: 0.3, energy: 0.3 },
+    Dignified: { intelligence: 0.3, energy: -0.3, social: -0.2, anger: -0.2, persistence: 0.2, decency: 0.2 },
+
+    // Dumb
+    "Single brain cell": { intelligence: -1.0 },
+    Dumb: { intelligence: -0.8, vocal: -0.2 },
+    Dense: { intelligence: -0.7, persistence: 0.2 },
+    Nitwit: { intelligence: -0.7, persistence: -0.5 },
+    Simple: { intelligence: -0.6, curiosity: -0.4 },
+    Bumbling: { intelligence: -0.6, curiosity: 0.4, persistence: -0.3 },
+    Foolish: { intelligence: -0.6, persistence: -0.6, energy: 0.2 },
+    Ditzy: { intelligence: -0.5, persistence: -0.5, curiosity: 0.3, fear: -0.3, anger: -0.3 },
+    Airheaded: { intelligence: -0.5, persistence: -0.4, decency: 0.2, vocal: 0.2 },
+
+    // Persistant
+    Untiring: { persistence: 0.9, energy: 0.6 },
+    Persistent: { persistence: 0.8 },
+    Stubborn: { persistence: 0.8, social: -0.4, dominance: 0.3 },
+    Passionate: { persistence: 0.7, decency: 0.4, social: 0.6, anger: 0.2 },
+    Relentless: { persistence: 0.7, energy: 0.3, decency: -0.3 },
+    Determined: { persistence: 0.6, fear: -0.3 },
+    Focused: { persistence: 0.6 },
+    Adamant: { persistence: 0.6, dominance: 0.5 },
+    Driven: { persistence: 0.6, energy: 0.5 },
+    Steady: { persistence: 0.6, fear: -0.5, anger: -0.4, curiosity: -0.3, energy: -0.2},
+    Patient: { persistence: 0.5, energy: -0.4 },
+    Disciplined: { persistence: 0.5, intelligence: 0.3, anger: -0.2, hunger: -0.2, fear: -0.2, decency: 0.1 },
+    Restrained: { persistence: 0.4, anger: -0.3, energy: -0.2, hunger: -0.1, decency: 0.1 },
+    Selective: { persistence: 0.4, intelligence: 0.3, hunger: -0.2 },
+    Fastidious: { persistence: 0.4, hunger: -0.3 },
+    Practical: { persistence: 0.4, curiosity: -0.2 },
+    Sensible: { persistence: 0.3, curiosity: -0.3, intelligence: 0.3 },
+
+    // Distractable
+    Scatterbrained: { persistence: -0.9, curiosity: 0.5, energy: 0.4 },
+    Distractable: { persistence: -0.8 },
+    Flittering: { persistence: -0.7, social: 0.6, energy: 0.4 },
+    Irresponsible: { persistence: -0.6, decency: -0.3 },
+    Giddy: { persistence: -0.6, fear: -0.6, anger: -0.4, curiosity: 0.3, intelligence: -0.2 },
+    Dopey: { persistence: -0.5, curiosity: 0.5, intelligence: -0.4 },
+    Impulsive: { persistence: -0.5, hunger: 0.1 },
+    Silly: { persistence: -0.5, curiosity: 0.4, social: 0.4, intelligence: -0.3 },
+    "Happy-go-lucky": { persistence: -0.5, anger: -0.4, fear: -0.2, energy: 0.2, decency: 0.1 },
+    "Loosey-goosey": { persistence: -0.4, fear: -0.3, curiosity: 0.3, energy: -0.2 },
+    "Easily frustrated": { persistence: -0.4, anger: 0.3 },
+    Fickle: { persistence: -0.4, dominance: 0.3, decency: -0.3, hunger: -0.2 },
+
+    // Hungry
+    Gluttonous: { hunger: 1.0, decency: -0.1, intelligence: -0.1 },
+    Ravenous: { hunger: 0.9, decency: -0.3, energy: 0.2 },
+    Voracious: { hunger: 0.9, energy: 0.5, persistence: -0.3 },
+    Indulgent: { hunger: 0.6, persistence: -0.5, decency: -0.4 },
+    "Ever-hungry": { hunger: 0.8 },
+    Hangry: { hunger: 0.8, anger: 0.6 },
+    Greedy: { hunger: 0.6, decency: -0.5 },
+    "Insom-nom-nom-niac": { hunger: 0.5, energy: 0.3, persistence: -0.3 },
+    Hungry: { hunger: 0.5 },
+    "Nom-noms": { hunger: 0.4, decency: 0.2 },
+    "Food-motivated": { hunger: 0.3, energy: 0.2, dominance: -0.2 },
+
+    // Picky
+    Abstemious: { hunger: -1.0, persistence: 0.4 },
+    Finnicky: { hunger: -0.9, dominance: 0.2 },
+    Picky: { hunger: -0.8, persistence: 0.2 },
+    Satisfied: { hunger: -0.6, fear: -0.3, anger: -0.3, decency: 0.2 },
+    Dainty: { hunger: -0.5, persistence: 0.3, decency: 0.1 },
+
+    // Vocal
+    Loud: { vocal: 0.8 },
+    Obnoxious: { vocal: 0.8, decency: -0.4, energy: 0.4 },
+    Flibbertigibbety: { vocal: 0.7, persistence: -0.5, curiosity: 0.3, decency: -0.2 },
+    Talkative: { vocal: 0.6, social: 0.2 },
+    Plaintive: { vocal: 0.6, energy: -0.4, fear: 0.3, curiosity: -0.2 },
+    Yammerer: { vocal: 0.5, persistence: -0.3, dominance: -0.2, energy: 0.1 },
+    Nattering: { vocal: 0.4 },
+    Chatty: { vocal: 0.3, social: 0.3 },
+
+    // Quiet
+    Silent: { vocal: -1.0 },
+    Vacant: { vocal: -0.8, intelligence: -0.6, curiosity: -0.6, energy: -0.5, anger: -0.4 },
+    Quiet: { vocal: -0.6, energy: -0.4, anger: -0.2 },
+    Shy: { vocal: -0.6, fear: 0.4, decency: 0.4, social: 0.3 },
+}

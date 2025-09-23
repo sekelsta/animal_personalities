@@ -1,232 +1,232 @@
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
+public class Temperament {
+    public float energy;
+    public float fear;
+    public float anger;
+    public float social;
+    public float dominance;
+    public float decency;
+    public float curiosity;
+    public float intelligence;
+    public float persistence;
+    public float hunger;
+    public float vocal;
+    public string? male;
+    public string? female;
+
+    public static Temperament Generate(Random random) {
+        return new Temperament() {
+            energy = 0.5f * random.NextSingle() + 0.5f * random.NextSingle() - 0.5f * random.NextSingle() - 0.5f * random.NextSingle(),
+            fear = 0.5f * random.NextSingle() + 0.5f * random.NextSingle() - 0.5f * random.NextSingle() - 0.5f * random.NextSingle(),
+            anger = 0.5f * random.NextSingle() + 0.5f * random.NextSingle() - 0.5f * random.NextSingle() - 0.5f * random.NextSingle(),
+            social = 0.5f * random.NextSingle() + 0.5f * random.NextSingle() - 0.5f * random.NextSingle() - 0.5f * random.NextSingle(),
+            dominance = 0.5f * random.NextSingle() + 0.5f * random.NextSingle() - 0.5f * random.NextSingle() - 0.5f * random.NextSingle(),
+            decency = 0.5f * random.NextSingle() + 0.5f * random.NextSingle() - 0.5f * random.NextSingle() - 0.5f * random.NextSingle(),
+            curiosity = 0.5f * random.NextSingle() + 0.5f * random.NextSingle() - 0.5f * random.NextSingle() - 0.5f * random.NextSingle(),
+            intelligence = 0.5f * random.NextSingle() + 0.5f * random.NextSingle() - 0.5f * random.NextSingle() - 0.5f * random.NextSingle(),
+            persistence = 0.5f * random.NextSingle() + 0.5f * random.NextSingle() - 0.5f * random.NextSingle() - 0.5f * random.NextSingle(),
+            hunger = 0.5f * random.NextSingle() + 0.5f * random.NextSingle() - 0.5f * random.NextSingle() - 0.5f * random.NextSingle(),
+            vocal = 0.5f * random.NextSingle() + 0.5f * random.NextSingle() - 0.5f * random.NextSingle() - 0.5f * random.NextSingle(),
+        };
+    }
+
+    public static Temperament GenerateYoung(Random random) {
+        Temperament t = Generate(random);
+        t.energy += 0.2f;
+        t.dominance -= 0.2f;
+        t.curiosity += 0.2f;
+        t.persistence -= 0.2f;
+        return t;
+    }
+
+    public Temperament Clone() {
+        return (Temperament)MemberwiseClone();
+    }
+
+    public void Difference(Temperament other, float multiplier = 1) {
+        energy -= other.energy * multiplier;
+        fear -= other.fear * multiplier;
+        anger -= other.anger * multiplier;
+        social -= other.social * multiplier;
+        dominance -= other.dominance * multiplier;
+        decency -= other.decency * multiplier;
+        curiosity -= other.curiosity * multiplier;
+        intelligence -= other.intelligence * multiplier;
+        persistence -= other.persistence * multiplier;
+        hunger -= other.hunger * multiplier;
+        vocal -= other.vocal * multiplier;
+    }
+
+    public void Age(Random random) {
+        energy += 0.1f * random.NextSingle() - 0.2f * random.NextSingle();
+        fear += 0.1f * random.NextSingle() - 0.1f * random.NextSingle();
+        anger += 0.1f * random.NextSingle() - 0.1f * random.NextSingle();
+        social += 0.1f * random.NextSingle() - 0.1f * random.NextSingle();
+        dominance += 0.2f * random.NextSingle() - 0.1f * random.NextSingle();
+        decency += 0.1f * random.NextSingle() - 0.1f * random.NextSingle();
+        curiosity += 0.1f * random.NextSingle() - 0.2f * random.NextSingle();
+        intelligence += 0.1f * random.NextSingle() - 0.1f * random.NextSingle();
+        persistence += 0.2f * random.NextSingle() - 0.1f * random.NextSingle();
+        hunger += 0.1f * random.NextSingle() - 0.1f * random.NextSingle();
+        vocal += 0.1f * random.NextSingle() - 0.1f * random.NextSingle();
+    }
+
+    public float DistanceSquaredRaw(Temperament other) {
+        return (energy - other.energy) * (energy - other.energy)
+            + (fear - other.fear) * (fear - other.fear)
+            + (anger - other.anger) * (anger - other.anger)
+            + (social - other.social) * (social - other.social)
+            + (dominance - other.dominance) * (dominance - other.dominance)
+            + (decency - other.decency) * (decency - other.decency)
+            + (curiosity - other.curiosity) * (curiosity - other.curiosity)
+            + (intelligence - other.intelligence) * (intelligence - other.intelligence)
+            + (persistence - other.persistence) * (persistence - other.persistence)
+            + (hunger - other.hunger) * (hunger - other.hunger)
+            + (vocal - other.vocal) * (vocal - other.vocal);
+    }
+
+    public float DistanceSquaredWeighted(Temperament other) {
+        return (energy - other.energy) * (energy - other.energy) * 1.2f
+            + (fear - other.fear) * (fear - other.fear) * 1.5f
+            + (anger - other.anger) * (anger - other.anger) * 1.5f
+            + (social - other.social) * (social - other.social) * 1.5f
+            + (dominance - other.dominance) * (dominance - other.dominance) * 1.2f
+            + (decency - other.decency) * (decency - other.decency) * 1.5f
+            + (curiosity - other.curiosity) * (curiosity - other.curiosity)
+            + (intelligence - other.intelligence) * (intelligence - other.intelligence)
+            + (persistence - other.persistence) * (persistence - other.persistence)
+            + (hunger - other.hunger) * (hunger - other.hunger)
+            + (vocal - other.vocal) * (vocal - other.vocal);
+    }
+
+    public override string ToString() {
+        return $"Temperament <energy={energy:F2}, fear={fear:F2}, anger={anger:F2}, social={social:F2}, dominance={dominance:F2}, decency={decency:F2}, curiosity={curiosity:F2}, intelligence={intelligence:F2}, persistence={persistence:F2}, hunger={hunger:F2}, vocal={vocal:F2}>";
+    }
+}
+
 public class PersonalityTester {
     public static void Main(string[] args) {
+        JObject json = JObject.Parse(File.ReadAllText("en.json"));
+        Dictionary<string, Temperament>? dict = json.ToObject<Dictionary<string, Temperament>?>();
+        ArgumentNullException.ThrowIfNull(dict);
+        Console.WriteLine("Loaded " + dict.Count + " personalities");
         Random random = new Random();
-        for (int i = 0; i < 20; ++i) {
-            float energy = random.NextSingle();
-            float fear = random.NextSingle();
-            float anger = random.NextSingle();
-            float love = random.NextSingle();
-            float dominance = random.NextSingle();
-            float curiosity = random.NextSingle();
-            string temperament = GetTemperament(energy, fear, anger, love, dominance, curiosity);
-            Console.WriteLine($"energy={energy:F2}, fear={fear:F2}, anger={anger:F2}, love={love:F2}, dominance={dominance:F2}, curiosity={curiosity:F2}, temperament={temperament}");
+
+        float worst_first = float.MinValue;
+        float worst_second = float.MinValue;
+        Temperament tfirst = null!;
+        Temperament tsecond = null!;
+
+        Console.WriteLine("Samples of change over time:");
+        for (int i = 0; i < 25; ++i) {
+            Temperament young = Temperament.GenerateYoung(random);
+            string youngPersonality = GetPersonalityPair(dict, young);
+
+            Temperament adult = young.Clone();
+            adult.Age(random);
+            string adultPersonality = GetPersonalityPair(dict, adult);
+
+            Temperament old = adult.Clone();
+            old.Age(random);
+            string oldPersonality = GetPersonalityPair(dict, old);
+
+            Console.WriteLine(youngPersonality + " -> " + adultPersonality + " -> " + oldPersonality);
         }
 
+        Console.WriteLine("Ordered by common to rare:");
         Dictionary<string, int> results = new Dictionary<string, int>();
+        foreach (KeyValuePair<string, Temperament> entry in dict) {
+            results[entry.Key] = 0;
+        }
+
         for (int i = 0; i < 10000; ++i) {
-            float energy = 0.5f * random.NextSingle() + 0.5f * random.NextSingle();
-            float fear = 0.5f * random.NextSingle() + 0.5f * random.NextSingle();
-            float anger = 0.5f * random.NextSingle() + 0.5f * random.NextSingle();
-            float love = 0.5f * random.NextSingle() + 0.5f * random.NextSingle();
-            float dominance = 0.5f * random.NextSingle() + 0.5f * random.NextSingle();
-            float curiosity = 0.5f * random.NextSingle() + 0.5f * random.NextSingle();
-            string temperament = GetTemperament(energy, fear, anger, love, dominance, curiosity);
-            if (results.ContainsKey(temperament)) {
-                results[temperament] += 1;
+            Temperament temperament = Temperament.Generate(random);
+            string personality = GetPersonality(dict, temperament, true);
+            results[personality] += 1;
+
+            float dist = temperament.DistanceSquaredWeighted(dict[personality]);
+            Temperament remainder = temperament.Clone();
+            remainder.Difference(dict[personality], 0.8f);
+            string secondary = GetPersonality(dict, remainder, false);
+            float d2 = remainder.DistanceSquaredRaw(dict[secondary]);
+            // Console.WriteLine(personality + ", " + secondary);
+            if (dist > worst_first) {
+                worst_first = dist;
+                tfirst = temperament;
             }
-            else {
-                results[temperament] = 1;
+            if (d2 > worst_second) {
+                worst_second = d2;
+                tsecond = remainder;
             }
         }
+
         var sorted = results.ToList();
         sorted.Sort((first, second) => second.Value.CompareTo(first.Value));
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 20; ++i) {
             Console.WriteLine($"{sorted[i].Key} {sorted[i].Value}");
         }
+        Console.WriteLine("...");
+        var backwards = results.ToList();
+        backwards.Sort((first, second) => first.Value.CompareTo(second.Value));
+        for (int i = 19; i >= 0; --i) {
+            Console.WriteLine($"{backwards[i].Key} {backwards[i].Value}");
+        }
+
+        Console.WriteLine($"Worst personality match:\n{GetPersonalityPair(dict, tfirst)} ({worst_first:F2}) {tfirst}"); // $"Worst secondary: {GetPersonality(dict, tsecond)} ({worst_second:F2}) {tsecond}"
+
+        FindClosest(dict);
     }
 
-    public static string judge(float val) {
-        float high = 0.8f;
-        float some = 0.6f;
-        float little = 0.4f;
-        float low = 0.2f;
-
-        if (val < low) return "low";
-        if (val < little) return "midlow";
-        if (val < some) return "mid";
-        if (val < high) return "midhigh";
-        return "high";
+    public static void FindClosest(Dictionary<string, Temperament> mapping) {
+        float best_dsq = float.MaxValue;
+        string personality1 = null!;
+        string personality2 = null!;
+        foreach (KeyValuePair<string, Temperament> test in mapping) {
+            foreach (KeyValuePair<string, Temperament> entry in mapping) {
+                if (test.Key == entry.Key) {
+                    continue;
+                }
+                float dsq = test.Value.DistanceSquaredRaw(entry.Value);
+                if (dsq < best_dsq) {
+                    best_dsq = dsq;
+                    personality1 = test.Key;
+                    personality2 = entry.Key;
+                }
+            }
+        }
+        Console.WriteLine($"Two closest personalities: {personality1} and {personality2}. Distance squared: {best_dsq:F2}");
     }
 
-    public static string GetTemperament(float energy, float fear, float anger, float love, float dominance, float curiosity) {
-        string key = "energy" + judge(energy) + "-fear" + judge(fear) + "-anger" + judge(anger) + "-love" + judge(love) + "-dominance" + judge(dominance) + "-curiosity" + judge(curiosity) + "-";
+    public static string GetPersonality(Dictionary<string, Temperament> mapping, Temperament temperament, bool weighted) {
+        string? best = null;
+        float distanceSquared = float.MaxValue;
 
-        if (Regex.IsMatch(key, "energy*-fearhigh-angerhigh-lovehigh-dominance*-curiosity*-*".Replace("*", ".*"))) return "Intense";
-        if (Regex.IsMatch(key, "energy*-fearhigh-angerhigh-love*-dominance*-curiosity*high-*".Replace("*", ".*"))) return "Unpredictable";
-
-        float high = 0.8f;
-        float some = 0.6f;
-        float little = 0.4f;
-        float low = 0.2f;
-
-        if (anger > high) {
-            if (fear > high) {
-                if (love > high) return "intense";
-                if (curiosity > some) return "unpredictable";
-                return "wild";
+        foreach (KeyValuePair<string, Temperament> entry in mapping) {
+            float d = weighted ? temperament.DistanceSquaredWeighted(entry.Value) : temperament.DistanceSquaredRaw(entry.Value);
+            if (d < distanceSquared) {
+                distanceSquared = d;
+                best = entry.Key;
             }
-            if (fear > some) return "bristling";
-            if (love > high) return "passionate";
-            if (love > some) return "fierce";
-            if (fear < low) return "hostile";
-            if (love < little) {
-                if (dominance > some) return "cruel";
-                return "vicious";
-            }
-            if (fear < little) return "savage";
-            if (energy > some) return "berserk";
-            if (energy < little) return "seething";
-            if (dominance > high) return "tyrannical";
-            if (curiosity > some) return "menacing";
-            if (curiosity < little) return "brutish";
-            return "aggressive";
-        }
-        if (fear > high) {
-            if (anger > some) return "defensive";
-            if (energy > some) return "skittish";
-            if (curiosity > some) return "suspicious";
-            if (love > some) return "vulnerable";
-            if (energy < little) return "gloomy";
-            if (anger < low) return "terrified";
-            if (anger < little) return "anxious";
-            if (love < little) return "paranoid";
-            return "fearful";
-        }
-        if (love > high) {
-            if (anger > some) return "protective";
-            if (fear < little) {
-                if (energy < high) return "buoyant";
-                return "trusting";
-            }
-            if (dominance > some) return "nurturing";
-            if (anger < little) return "sweet";
-            if (dominance < little) return "loyal";
-            if (energy < little) return "cozy";
-            if (energy > high) return "exuberant";
-            if (energy > some) return "devoted";
-            return "loving";
-        }
-        if (anger > some) {
-            if (fear > some) {
-                if (energy > some) return "reactive";
-                return "untamed";
-            }
-            if (love > some) return "stern";
-            if (energy > high) return "volatile";
-            if (energy > some) return "feisty";
-            if (energy < little) return "sullen";
-            if (energy < little) return "grumpy";
-            if (dominance < low) return "resentful";
-            if (dominance > high) return "forceful";
-            if (dominance > some) return "tough";
-            if (fear < little) return "bold";
-            if (love < little) return "bitter";
-            if (curiosity > some) return "indignant";
-            return "angry";
-        }
-        if (fear < low) {
-            if (anger < low) return "mellow";
-            if (curiosity > some) return "adventurous";
-            if (energy > some) return "daring";
-            if (curiosity < little) return "steady";
-            if (energy < little) return "serene";
-            if (love < little) return "stoic";
-            return "brave";
-        }
-        if (energy > high) {
-            if (love > some) return "vivacious";
-            if (love < little) return "restless";
-            if (dominance > some) return "spirited";
-            if (dominance < little) return "enthusiastic";
-            return "energetic";
-        }
-        if (love < low) {
-            if (dominance > some) return "independent";
-            if (dominance < little) return "withdrawn";
-            return "aloof";
-        }
-        if (energy < low) {
-            if (fear > some) return "concerned";
-            return "sleepy";
-        }
-        if (curiosity > high) {
-            if (dominance > high) return "sage";
-            if (fear > some) return "wily";
-            if (love < little) return "shrewd";
-            return "clever";
-        }
-        if (curiosity < low) {
-            return "simple";
-        }
-        if (dominance > high) {
-            if (energy > some) return "commanding";
-            return "kingly";
-        }
-        if (anger < low) {
-            if (dominance < low) return "meek";
-            if (love > some) return "forgiving";
-            return "unflappable";
-        }
-        if (dominance > some) {
-            if (love < little) return "restive";
-            if (fear < little) return "assertive";
-            return "bossy";
-        }
-        if (dominance < low) {
-            return "submissive";
-        }
-        if (fear < little) {
-            if (energy < little) return "relaxed";
-            return "calm";
-        }
-        if (fear > some) {
-            if (dominance < little) return "timid";
-            if (energy > some) return "alert";
-            if (love > some) return "shy";
-            if (love < low) return "secretive";
-            if (love < little) return "mistrustful";
-            if (curiosity > some) return "doubtful";
-            return "cautious";
-        }
-        if (anger < little) {
-            if (love > some) {
-                if (energy > some) return "joyful";
-                if (energy < little) return "gentle";
-                if (dominance > some) return "benevolent";
-                return "friendly";
-            }
-            if (dominance < little) return "docile";
-            if (energy < little) return "placid";
-            return "peaceful";
-        }
-        if (love > some) {
-            if (energy > some) return "merry";
-            if (energy < little) return "warm";
-            return "affectionate";
-        }
-        if (dominance < little) {
-            return "considerate";
-        }
-        if (energy > some) {
-            if (curiosity > some) return "nosy";
-            if (curiosity < little) return "dopey";
-            return "driven";
-        }
-        if (energy < little) {
-            return "patient";
-        }
-        if (curiosity > some) {
-            return "curious";
-        }
-        if (curiosity < little) {
-            return "straightforward";
         }
 
-        return "balanced";
+        ArgumentNullException.ThrowIfNull(best);
+        return best;
+    }
+
+    public static string GetPersonalityPair(Dictionary<string, Temperament> mapping, Temperament temperament) {
+        string personality = GetPersonality(mapping, temperament, true);
+        Temperament remainder = temperament.Clone();
+        remainder.Difference(mapping[personality], 0.8f);
+        string secondary = GetPersonality(mapping, remainder, false);
+        if (secondary == personality) {
+            return personality;
+        }
+        return personality + ", " + secondary.ToLower();
     }
 }
