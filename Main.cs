@@ -38,10 +38,22 @@ public class Temperament {
 
     public static Temperament GenerateYoung(Random random) {
         Temperament t = Generate(random);
-        t.energy += 0.2f;
-        t.dominance -= 0.2f;
-        t.curiosity += 0.2f;
-        t.persistence -= 0.2f;
+        t.energy += 0.4f;
+        t.dominance -= 0.4f;
+        t.curiosity += 0.4f;
+        t.persistence -= 0.4f;
+        return t;
+    }
+
+    public static Temperament GenerateWolf(Random random) {
+        Temperament t = Generate(random);
+        t.fear = t.fear * 1.25f + 0.25f;
+        t.anger = t.anger * 1.3f + 0.3f;
+        t.energy = t.energy * 1.2f + 0.2f;
+        t.intelligence = t.intelligence * 1.3f + 0.3f;
+        t.dominance = t.dominance * 1.3f + 0.3f;
+        t.curiosity = t.curiosity * 1.3f + 0.3f;
+        t.vocal = t.vocal * 1.1f - 0.1f;
         return t;
     }
 
@@ -64,17 +76,17 @@ public class Temperament {
     }
 
     public void Age(Random random) {
-        energy += 0.1f * random.NextSingle() - 0.2f * random.NextSingle();
-        fear += 0.1f * random.NextSingle() - 0.1f * random.NextSingle();
-        anger += 0.1f * random.NextSingle() - 0.1f * random.NextSingle();
-        social += 0.1f * random.NextSingle() - 0.1f * random.NextSingle();
-        dominance += 0.2f * random.NextSingle() - 0.1f * random.NextSingle();
-        decency += 0.1f * random.NextSingle() - 0.1f * random.NextSingle();
-        curiosity += 0.1f * random.NextSingle() - 0.2f * random.NextSingle();
-        intelligence += 0.1f * random.NextSingle() - 0.1f * random.NextSingle();
-        persistence += 0.2f * random.NextSingle() - 0.1f * random.NextSingle();
-        hunger += 0.1f * random.NextSingle() - 0.1f * random.NextSingle();
-        vocal += 0.1f * random.NextSingle() - 0.1f * random.NextSingle();
+        energy += 0.2f * random.NextSingle() - 0.4f * random.NextSingle();
+        fear += 0.2f * random.NextSingle() - 0.2f * random.NextSingle();
+        anger += 0.2f * random.NextSingle() - 0.2f * random.NextSingle();
+        social += 0.2f * random.NextSingle() - 0.2f * random.NextSingle();
+        dominance += 0.4f * random.NextSingle() - 0.2f * random.NextSingle();
+        decency += 0.2f * random.NextSingle() - 0.2f * random.NextSingle();
+        curiosity += 0.2f * random.NextSingle() - 0.4f * random.NextSingle();
+        intelligence += 0.2f * random.NextSingle() - 0.2f * random.NextSingle();
+        persistence += 0.4f * random.NextSingle() - 0.2f * random.NextSingle();
+        hunger += 0.2f * random.NextSingle() - 0.2f * random.NextSingle();
+        vocal += 0.2f * random.NextSingle() - 0.2f * random.NextSingle();
     }
 
     public float DistanceSquaredRaw(Temperament other) {
@@ -122,6 +134,13 @@ public class PersonalityTester {
         float worst_second = float.MinValue;
         Temperament tfirst = null!;
         Temperament tsecond = null!;
+
+        Console.WriteLine("Samples of wolves:");
+        for (int i = 0; i < 25; ++i) {
+            Temperament t = Temperament.GenerateWolf(random);
+            string personality = GetPersonalityPair(dict, t);
+            Console.WriteLine(personality);
+        }
 
         Console.WriteLine("Samples of change over time:");
         for (int i = 0; i < 25; ++i) {
@@ -184,23 +203,29 @@ public class PersonalityTester {
     }
 
     public static void FindClosest(Dictionary<string, Temperament> mapping) {
-        float best_dsq = float.MaxValue;
-        string personality1 = null!;
-        string personality2 = null!;
+        var distances = new List<(string, string, float)>();
+
+        int i = 0;
         foreach (KeyValuePair<string, Temperament> test in mapping) {
+            int j = 0;
             foreach (KeyValuePair<string, Temperament> entry in mapping) {
-                if (test.Key == entry.Key) {
+                if (j <= i) {
+                    ++j;
                     continue;
                 }
+
                 float dsq = test.Value.DistanceSquaredRaw(entry.Value);
-                if (dsq < best_dsq) {
-                    best_dsq = dsq;
-                    personality1 = test.Key;
-                    personality2 = entry.Key;
+                if (dsq < 0.1) {
+                    distances.Add((test.Key, entry.Key, dsq));
                 }
+                ++j;
             }
+            ++i;
         }
-        Console.WriteLine($"Two closest personalities: {personality1} and {personality2}. Distance squared: {best_dsq:F2}");
+        Console.WriteLine("Close personalities:");
+        foreach (var entry in distances) {
+            Console.WriteLine($"{entry.Item1}, {entry.Item2}: {entry.Item3:F2}");
+        }
     }
 
     public static string GetPersonality(Dictionary<string, Temperament> mapping, Temperament temperament, bool weighted) {
